@@ -1,0 +1,21 @@
+#!/bin/bash
+# keepawake - force this Mac fully awake until you press Ctrl+C.
+#   * system stays awake (lid open OR closed)
+#   * screen stays on and does not lock
+#   * works on battery, and keeps working if you unplug while it runs
+# On Ctrl+C it hands control back to the automatic ac-keepawake daemon.
+PMSET=/usr/bin/pmset
+GREP=/usr/bin/grep
+CAFFEINATE=/usr/bin/caffeinate
+caff_pid=""
+cleanup() {
+  [ -n "$caff_pid" ] && kill "$caff_pid" 2>/dev/null
+  if "$PMSET" -g ps | "$GREP" -q "AC Power"; then sudo "$PMSET" -a disablesleep 1; else sudo "$PMSET" -a disablesleep 0; fi
+  echo; echo "[keepawake stopped - control returned to the automatic daemon]"; exit 0
+}
+trap cleanup INT TERM HUP
+"$CAFFEINATE" -d -w $$ &
+caff_pid=$!
+sudo "$PMSET" -a disablesleep 1
+echo "[keepawake ON: screen stays on, awake lid open/closed, survives unplug. Press Ctrl+C to stop.]"
+while :; do sudo "$PMSET" -a disablesleep 1; sleep 2; done
