@@ -36,6 +36,56 @@ cd mac-keepawake
 
 Run it as your normal user - it asks for your password when it needs root. It's active immediately and after every reboot/login.
 
+## Or just build it with a coding agent (Claude Code, Codex, etc.)
+
+Don't want to clone this? Paste the prompt below into a terminal coding agent running on your Mac - Claude Code, Codex, Cursor, anything - and it'll build the same system from scratch. The non-obvious macOS gotchas are baked into the prompt so it won't waste time going down dead ends:
+
+```
+Build a macOS tool that keeps my Mac fully awake - including when the lid is
+closed - for headless/remote use (I drive it from my phone over SSH / Claude
+Code Remote Control).
+
+Requirements:
+1. On AC power: stay awake automatically, lid open OR closed, no command needed,
+   and it must survive a reboot.
+2. On battery: a command called `keepawake` that I run in Terminal to keep it
+   awake (lid open or closed); Ctrl+C stops it and returns to normal sleep. It
+   must keep working if I start it while plugged in and then unplug.
+3. While it is awake the screen must NOT lock or show the login page - I should
+   come back to my live desktop.
+4. When the lid closes, drop the backlight to minimum to save power and heat,
+   and restore my exact previous brightness when it opens. The screen must keep
+   rendering at minimum backlight so screenshots / screen-sharing still work.
+
+macOS specifics to save you time (these are the non-obvious parts):
+- `sudo pmset disablesleep 1` is the ONLY setting that keeps the system awake
+  with the lid closed. It is a global flag and does not reliably persist across
+  reboot, so drive it from a root LaunchDaemon (RunAtLoad + KeepAlive) that sets
+  it from the power source: read state with `pmset -g ps`, react to changes with
+  `pmset -g pslog`.
+- `disablesleep` does NOT stop display sleep or the lock screen. To kill the
+  login page, also run `sudo pmset -c displaysleep 0` and disable the screen
+  saver: `defaults -currentHost write com.apple.screensaver idleTime -int 0`.
+- Read lid state with `ioreg -r -k AppleClamshellState` (value "Yes" = closed).
+- On Apple Silicon the `brightness` Homebrew tool and the legacy IOKit brightness
+  API both fail with "unsupported" (error -536870201). Use the PRIVATE
+  DisplayServices framework instead: DisplayServicesGetBrightness(CGDirectDisplayID,
+  float*) and DisplayServicesSetBrightness(CGDirectDisplayID, float). Write a tiny
+  C helper that dlopen()s
+  /System/Library/PrivateFrameworks/DisplayServices.framework/DisplayServices, and
+  run the lid/brightness watcher as a LaunchAgent (user GUI session - DisplayServices
+  will not work from a root daemon).
+- `keepawake` should hold `caffeinate -d` for the display and re-assert
+  `disablesleep 1` every ~2s so it overrides the daemon the instant I unplug; on
+  exit it should restore power-appropriate state.
+
+Deliver: the daemon + watcher scripts, the C helper, launchd plists (a
+LaunchDaemon for the power piece and a LaunchAgent for brightness), an idempotent
+install.sh and an uninstall.sh that restores defaults, and a README. Validate
+before finishing: bash -n on the scripts, plutil -lint on the plists, and compile
+the helper.
+```
+
 ## Usage
 
 **On the charger:** nothing to do. Close the lid, walk away - it stays awake and reachable, and you come back to a live desktop.
