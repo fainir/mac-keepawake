@@ -9,6 +9,10 @@ Keep your Mac fully awake - **even with the lid closed** - and dim the backlight
 
 Built for headless / remote workflows - e.g. driving the Mac from your phone (Claude Code Remote Control, SSH, screen sharing) with the lid shut.
 
+![mac-keepawake demo](assets/demo.gif)
+
+> The backlight dimming is a *physical* effect (the framebuffer keeps rendering), so it can't be screen-recorded - this terminal demo shows the controls and live output instead.
+
 ## Why
 
 macOS gives you blunt options: either it sleeps when you close the lid, or you keep the whole display blazing. `caffeinate` stops *system* sleep but not display sleep or the lock screen - and it can't keep the machine awake with the lid closed at all. This wires up the missing pieces:
