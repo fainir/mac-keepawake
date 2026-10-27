@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: brew install shellcheck
+      # bash -n, shellcheck, plutil -lint, clang build of dsbright, then the
+      # shim-based tests. Nothing touches the runner's power/sudo/launchd state.
+      - name: Test
+        run: ./test/run.sh
