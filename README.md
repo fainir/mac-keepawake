@@ -54,6 +54,16 @@ cd mac-keepawake
 
 Run it as your normal user - it asks for your password when it needs root. It's active immediately and after every reboot/login, and it's safe to re-run (e.g. after pulling an update). Installing over SSH while nobody is logged in to the desktop works too; the brightness agent then starts at your next login.
 
+
+Or with Homebrew (same installer, run once after `brew install`):
+
+```bash
+brew install fainir/tap/mac-keepawake
+mac-keepawake-install
+```
+
+Undo with `mac-keepawake-uninstall`.
+
 ## Usage
 
 **On the charger:** nothing to do. Close the lid, walk away - it stays awake and reachable, and you come back to a live desktop.
