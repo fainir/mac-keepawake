@@ -179,3 +179,13 @@ Runs `bash -n`, `shellcheck` (if installed), `plutil -lint` on the plists, a str
 ## License
 
 MIT - see [LICENSE](LICENSE).
+
+---
+
+### More open source by [Nir Feinstein](https://nirfeinste.in)
+
+- [agent-harness](https://github.com/fainir/agent-harness) - make Claude Code or Codex act as a product team, a CEO or a portfolio manager
+- [frugal](https://github.com/fainir/frugal) - your agent finds the cheaper honest way before it pays for anything
+- [flipback](https://github.com/fainir/flipback) - an automatic `/goal` for every turn: sends Claude Code back when it stops early
+- [recall](https://github.com/fainir/recall) - your Claude Code memory in every agent, over MCP
+- [All projects](https://nirfeinste.in/#open-source)
