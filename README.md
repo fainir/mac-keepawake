@@ -5,7 +5,7 @@
 
 Keep your Mac fully awake - **even with the lid closed** - and dim the backlight while it's shut. For people who drive a MacBook remotely (SSH, screen sharing, Claude Code Remote Control) with the lid down.
 
-macOS sleeps the moment you close the lid unless you have an external display attached, and `caffeinate` can't stop that, nor the display sleeping into a lock screen. mac-keepawake wires up the missing pieces with a few shell scripts, a tiny C helper and two `launchd` jobs:
+macOS can put a MacBook to sleep when the lid closes. For a long command with the lid open, start with the [idle-sleep check](#keep-a-long-agent-run-awake). For remote work with the lid closed, mac-keepawake changes system sleep settings with a few shell scripts, a tiny C helper and two `launchd` jobs:
 
 - **On AC power:** stays awake automatically, lid open or closed. No commands.
 - **On battery:** run `keepawake` to stay awake (Ctrl+C to stop). It keeps going if you unplug while it runs.
@@ -15,6 +15,24 @@ macOS sleeps the moment you close the lid unless you have an external display at
 ![mac-keepawake demo](assets/demo.gif)
 
 > The backlight dimming is a *physical* effect (the framebuffer keeps rendering), so it can't be screen-recorded - this terminal demo shows the controls and live output instead.
+
+## Keep a long agent run awake
+
+When a command stalls after the Mac idles with the lid open, try macOS's built-in idle-sleep hold. It lasts for the life of the command. The Vibe issue thread gives this example. [Vibe issue reply](https://github.com/mistralai/mistral-vibe/issues/1474#issuecomment-6767522259).
+
+```sh
+caffeinate -i vibe
+```
+
+To try the hold for ten seconds, run `caffeinate -i /bin/sleep 10`. In another Terminal, run this check while the command is active and again after it exits.
+
+```sh
+pmset -g assertions | grep -F PreventUserIdleSystemSleep
+```
+
+Look for a `caffeinate` entry during the command. That entry disappears when the command exits. The display can still sleep, and closing the lid can still put the Mac to sleep. [Apple's idle-sleep assertion](https://developer.apple.com/documentation/iokit/kiopmassertiontypepreventuseridlesystemsleep).
+
+For SSH or screen sharing with the lid closed, review the [system changes](#what-it-changes-on-your-mac) and [uninstall steps](#uninstall) before choosing the setup below.
 
 ## What it changes on your Mac
 
