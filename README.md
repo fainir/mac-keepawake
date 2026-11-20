@@ -18,7 +18,9 @@ macOS can put a MacBook to sleep when the lid closes. For a long command with th
 
 ## Keep a long agent run awake
 
-When a command stalls after the Mac idles with the lid open, try macOS's built-in idle-sleep hold. It lasts for the life of the command. The Vibe issue thread gives this example. [Vibe issue reply](https://github.com/mistralai/mistral-vibe/issues/1474#issuecomment-6767522259).
+For Mistral Vibe 3.1.4 and later, add `keep_awake = true` at the top level of your Vibe `config.toml`. It holds off idle sleep during a turn, including while Vibe waits for your answer. [Vibe 3.1.4 release](https://github.com/mistralai/mistral-vibe/releases/tag/v3.1.4) · [Vibe configuration](https://docs.mistral.ai/vibe/code/cli/configuration).
+
+For an older Vibe release or another long command with the lid open, macOS can hold idle sleep for the life of that command.
 
 ```sh
 caffeinate -i vibe
