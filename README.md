@@ -34,6 +34,22 @@ pmset -g assertions | grep -F PreventUserIdleSystemSleep
 
 Look for a `caffeinate` entry during the command. That entry disappears when the command exits. The display can still sleep, and closing the lid can still put the Mac to sleep. [Apple's idle-sleep assertion](https://developer.apple.com/documentation/iokit/kiopmassertiontypepreventuseridlesystemsleep).
 
+### Keep a running command awake
+
+If your agent or build is already running, find the process by name in Activity Monitor and read its PID column. Replace the example PID below with that number. Check the command name before starting the hold.
+
+```sh
+ps -p 12345 -o pid=,comm=
+```
+
+In a second terminal, start the hold for that PID.
+
+```sh
+/usr/bin/caffeinate -i -w 12345
+```
+
+Run `pmset -g assertions` in another terminal and look for the new `caffeinate` entry with `PreventUserIdleSystemSleep`. The hold ends when the watched process exits or you press Ctrl+C in the hold terminal. Repeat the assertion check to confirm that entry cleared. The display and lid retain their usual sleep behavior.
+
 For SSH or screen sharing with the lid closed, review the [system changes](#what-it-changes-on-your-mac) and [uninstall steps](#uninstall) before choosing the setup below.
 
 ## What it changes on your Mac
